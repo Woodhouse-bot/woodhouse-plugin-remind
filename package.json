@@ -1,0 +1,22 @@
+{
+  "name": "woodhouse-plugin-remind",
+  "version": "0.0.0",
+  "description": "woodhouse-plugin-remind =======================",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Woodhouse-bot/woodhouse-plugin-remind.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Woodhouse-bot/woodhouse-plugin-remind/issues"
+  },
+  "homepage": "https://github.com/Woodhouse-bot/woodhouse-plugin-remind",
+  "dependencies": {
+    "moment": "~2.8.3"
+  }
+}
