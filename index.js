@@ -7,11 +7,11 @@ var remind = function(){
 
 remind.prototype.init = function() {
     var self = this;
-    this.listen('(set reminder|remind me) to (.+) in (.+?) (seconds|minutes|hours|days)', 'standard', function(from, interface, params){
+    this.listen('(set reminder|remind me) to (.+) in (.+?) (second|minute|hour|day)[s]*', 'standard', function(from, interface, params){
         self.addReminder(params[2], params[3], params[1], interface, from);
     });
 
-    this.listen('remind me in (.+) (seconds|minutes|hours|days) to (.+?)', 'standard', function(from, interface, params){
+    this.listen('remind me in (.+) (second|minute|hour|day)[s]* to (.+?)', 'standard', function(from, interface, params){
         self.addReminder(params[0], params[1], params[2], interface, from);
     });
 
