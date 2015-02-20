@@ -7,15 +7,15 @@ var remind = function(){
 
 remind.prototype.init = function() {
     var self = this;
-    this.listen('(set reminder|remind me) to (.+) in (.+?) (second|minute|hour|day)[s]*', 'standard', function(from, interface, params){
+    this.listen('(set reminder|remind me) to (:<reminder>.+) in (:<interval>.+?) (:<seconds, minutes, hours or days>(second|minute|hour|day)[s]*)', 'standard', function(from, interface, params){
         self.addReminder(params[2], params[3], params[1], interface, from);
     });
 
-    this.listen('remind me in (.+) (second|minute|hour|day)[s]* to (.+?)', 'standard', function(from, interface, params){
+    this.listen('remind me in (:<interval>.+) (:<seconds, minutes, hours or days>(second|minute|hour|day)[s]*) to (:<reminder>.+?)', 'standard', function(from, interface, params){
         self.addReminder(params[0], params[1], params[2], interface, from);
     });
 
-    this.listen('cancel reminder ([0-9]+)', 'standard', function(from, interface, params){
+    this.listen('cancel reminder (:<reminder id>[0-9]+)', 'standard', function(from, interface, params){
         self.api.stopCronJob(params[1]);
 
         self.sendMessage('Reminder with ID ' + params[1] + ' removed', interface, from);
