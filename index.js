@@ -12,11 +12,11 @@ remind.prototype.init = function() {
     });
 
     this.listen('remind me in (:<interval>.+) (:<seconds, minutes, hours or days>(second|minute|hour|day)[s]*) to (:<reminder>.+?)', 'standard', function(from, interface, params){
-        self.addReminder(params[0], params[1], params[2], interface, from);
+        self.addReminder(params[0], params[1], params[3], interface, from);
     });
 
     this.listen('cancel reminder (:<reminder id>[0-9]+)', 'standard', function(from, interface, params){
-        self.api.stopCronJob(params[1]);
+        self.api.stopCronJob(params[0]);
 
         self.sendMessage('Reminder with ID ' + params[1] + ' removed', interface, from);
     })
