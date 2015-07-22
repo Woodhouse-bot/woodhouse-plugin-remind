@@ -16,10 +16,14 @@ remind.prototype.init = function() {
     });
 
     this.listen('cancel reminder (:<reminder id>[0-9]+)', 'standard', function(from, interface, params){
-        self.api.stopCronJob(params[0]);
+        self.api.removeCronJob(params[0]);
 
-        self.sendMessage('Reminder with ID ' + params[1] + ' removed', interface, from);
-    })
+        self.sendMessage('Reminder with ID ' + params[0] + ' removed', interface, from);
+    });
+
+    this.registerCronHandler('sendMessage', function(params){
+        self.sendMessage('Reminder to ' + params.reminditem, params.interface, params.from);
+    });
 
 
 }
@@ -28,8 +32,10 @@ remind.prototype.addReminder = function(timevalue, timeunit, reminditem, interfa
     var self = this;
     var crontime = moment().add(timevalue, timeunit).toDate();
 
-    var id = this.api.addCronJob(crontime, function(){
-        self.sendMessage('Reminder to ' + reminditem, interface, from);
+    var id = this.addCronJob(crontime, 'sendMessage', {
+        reminditem: reminditem,
+        interface: interface,
+        from: from
     });
 
     this.sendMessage('Reminder added with ID ' + id, interface, from);
