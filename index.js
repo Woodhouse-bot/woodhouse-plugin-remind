@@ -1,44 +1,56 @@
-var moment = require('moment');
-var remind = function(){
-    this.name = 'remind';
-    this.displayname = 'Remind';
-    this.description = 'Set reminders for yourself';
-}
+'use strict';
 
-remind.prototype.init = function() {
-    var self = this;
-    this.listen('(set reminder|remind me) to (:<reminder>.+) in (:<interval>.+?) (:<seconds, minutes, hours or days>(second|minute|hour|day)[s]*)', 'standard', function(from, interface, params){
-        self.addReminder(params[2], params[3], params[1], interface, from);
-    });
+const moment = require(`moment`);
+class remind {
+    constructor() {
+        this.name = `remind`;
+        this.displayname = `Remind`;
+        this.description = `Set reminders for yourself`;
+    }
 
-    this.listen('remind me in (:<interval>.+) (:<seconds, minutes, hours or days>(second|minute|hour|day)[s]*) to (:<reminder>.+?)', 'standard', function(from, interface, params){
-        self.addReminder(params[0], params[1], params[3], interface, from);
-    });
+    init() {
+        this.registerCronHandler(`sendMessage`, (params) => {
+            this.sendMessage(params.user, params.interfaceName, `Reminder to ${params.reminditem}`);
+        });
 
-    this.listen('cancel reminder (:<reminder id>[0-9]+)', 'standard', function(from, interface, params){
-        self.api.removeCronJob(params[0]);
+        this.listen(
+            `(set reminder|remind me) to (:<reminder>.+) in (:<interval>.+?) (:<time_unit>(second|minute|hour|day)[s]*)`,
+            `standard`,
+            (from, interfaceName, params) => {
+                return this.addReminder(params.interval, params.time_unit, params.reminder, interfaceName, from);
+            }
+        );
 
-        self.sendMessage('Reminder with ID ' + params[0] + ' removed', interface, from);
-    });
+        this.listen(
+            `remind me in (:<interval>.+?) (:<time_unit>(second|minute|hour|day)[s]*) to (:<reminder>.+)`,
+            `standard`,
+            (from, interfaceName, params) => {
+                return this.addReminder(params.interval, params.time_unit, params.reminder, interfaceName, from);
+            }
+        );
 
-    this.registerCronHandler('sendMessage', function(params){
-        self.sendMessage('Reminder to ' + params.reminditem, params.interface, params.from);
-    });
+        this.listen(
+            `cancel reminder (:<reminder_id>[0-9]+)`,
+            `standard`,
+            (from, interfaceName, params) => {
+                this.removeCronJob(params.reminder_id);
 
+                return `Reminder with ID ${params.reminder_id} removed`;
+            }
+        );
+    }
 
-}
+    addReminder(timevalue, timeunit, reminditem, interfaceName, user) {
+        const crontime = moment().add(timevalue, timeunit).toDate();
 
-remind.prototype.addReminder = function(timevalue, timeunit, reminditem, interface, from) {
-    var self = this;
-    var crontime = moment().add(timevalue, timeunit).toDate();
-
-    var id = this.addCronJob(crontime, 'sendMessage', {
-        reminditem: reminditem,
-        interface: interface,
-        from: from
-    });
-
-    this.sendMessage('Reminder added with ID ' + id, interface, from);
+        return this.addCronJob(crontime, `sendMessage`, {
+            reminditem,
+            interfaceName,
+            user
+        }).then((id) => {
+            return `Reminder added with ID ${id}`;
+        });
+    }
 }
 
 module.exports = remind;
