@@ -17,6 +17,6 @@
   },
   "homepage": "https://github.com/Woodhouse-bot/woodhouse-plugin-remind",
   "dependencies": {
-    "moment": "~2.8.3"
+    "moment": "~2.24.0"
   }
 }
